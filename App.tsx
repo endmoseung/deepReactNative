@@ -1,19 +1,17 @@
-import {
-  ImageBackground,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  View,
-} from "react-native";
+import { ImageBackground, SafeAreaView, StyleSheet } from "react-native";
 import StartGame from "./page/StartGame";
 import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
 import GameScreen from "./page/GameScreen";
 import Colors from "./constants/colors";
 import GameOver from "./page/GameOver";
+import { useFonts } from "expo-font";
+import AppLoading from "expo-app-loading";
 
 export default function App() {
   const [userNumber, setUserNumber] = useState<string>();
+
+  const [userCount, setUserCount] = useState(0);
 
   const [isGameOver, setIsGameOver] = useState(true);
 
@@ -22,11 +20,27 @@ export default function App() {
     setIsGameOver(false);
   };
 
+  const handleGameRestart = () => {
+    setIsGameOver(true);
+    setUserNumber(undefined);
+    setUserCount(0);
+  };
+
+  const [fontsLoaded] = useFonts({
+    "open-sans": require("./assets/fonts/OpenSans-Regular.ttf"),
+    "open-sans-bold": require("./assets/fonts/OpenSans-Bold.ttf"),
+  });
+
   let screen = <StartGame onPickNumber={pickedNumberHandler} />;
+
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  }
 
   if (userNumber) {
     screen = (
       <GameScreen
+        increaseUserCount={() => setUserCount(userCount + 1)}
         gameOver={() => setIsGameOver(true)}
         userNumber={Number(userNumber)}
       />
@@ -34,7 +48,13 @@ export default function App() {
   }
 
   if (isGameOver && userNumber) {
-    screen = <GameOver />;
+    screen = (
+      <GameOver
+        userNumber={userNumber}
+        onGameRestart={handleGameRestart}
+        userCount={userCount}
+      />
+    );
   }
 
   return (

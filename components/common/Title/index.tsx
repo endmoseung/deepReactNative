@@ -1,6 +1,5 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Platform, StyleSheet, Text } from "react-native";
 import React from "react";
-import Colors from "../../../constants/colors";
 
 interface TitleProps {
   children: React.ReactNode;
@@ -12,12 +11,14 @@ export default function Title({ children }: TitleProps) {
 
 const styles = StyleSheet.create({
   title: {
+    fontFamily: "open-sans-bold",
     fontSize: 24,
-    fontWeight: "bold",
     color: "white",
     textAlign: "center",
-    borderWidth: 2,
+    borderWidth: Platform.select({ ios: 0, android: 2 }),
     borderColor: "white",
     padding: 12,
+    maxWidth: "80%",
+    width: 300,
   },
 });
